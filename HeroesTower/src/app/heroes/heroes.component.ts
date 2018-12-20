@@ -1,3 +1,4 @@
+import { RouterModule, Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
@@ -9,9 +10,9 @@ import { HeroService } from '../hero.service';
 })
 export class HeroesComponent implements OnInit {
 
-  heroes: Hero[];
+  heroes: Hero[] = [];
 
-  constructor(private heroesService: HeroService) {
+  constructor(private heroesService: HeroService, private router: Router) {
    }
 
   ngOnInit() {
@@ -26,8 +27,10 @@ export class HeroesComponent implements OnInit {
 
   add(name: string): void {
     name = name.trim();
+    const tmpHero = {id: 0, name: name};
+
     if (!name) {return ; }
-    this.heroesService.addHero({ name } as Hero).subscribe(
+    this.heroesService.addHero(tmpHero).subscribe(
       hero => this.heroes.push(hero)
     );
   }

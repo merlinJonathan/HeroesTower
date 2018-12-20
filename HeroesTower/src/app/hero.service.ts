@@ -9,7 +9,7 @@ import { catchError, map, tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class HeroService {
-  private heroesUrl = 'api/heroes';
+  private heroesUrl = 'http://localhost:8082/api/heroes';
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -18,8 +18,7 @@ export class HeroService {
   constructor(private messageService: MessageService, private http: HttpClient) { }
 
   getHeroes(): Observable<Hero[]> {
-    this.messageService.add('HeroService: fetched heroes');
-    return this.http.get<Hero[]>(this.heroesUrl).pipe(
+    return this.http.get<Hero[]>(this.heroesUrl + '/').pipe(
       tap(_ => this.log('fetched heroes')),
       catchError(this.handleError('getHeroes', []))
     );
@@ -35,22 +34,22 @@ export class HeroService {
   }
 
   addHero(hero: Hero): Observable<Hero> {
-    return this.http.post<Hero>(this.heroesUrl, hero, this.httpOptions).pipe(
+    return this.http.post<Hero>(this.heroesUrl + '/', hero, this.httpOptions).pipe(
       tap((hero1: Hero) => this.log('added hero w/ id=' + hero1.id)),
       catchError(this.handleError<Hero>('addHero'))
     );
   }
 
   updateHero(hero: Hero): Observable<any> {
-    return this.http.put(this.heroesUrl, hero, this.httpOptions).pipe(
-      tap(_ => this.log('updated hero id=' + hero.id)),
+    return this.http.put(this.heroesUrl + '/', hero, this.httpOptions).pipe(
+      tap((hero1: Hero) => this.log('updated hero id=' + hero1.id)),
       catchError(this.handleError<any>('updateHero'))
     );
   }
 
   deleteHero(hero: Hero | number): Observable<any> {
     const id = typeof hero === 'number' ? hero : hero.id;
-    const url = '${this.heroesUrl}/${id}';
+    const url = '' + this.heroesUrl + '/' + id;
 
     return this.http.delete<Hero>(url, this.httpOptions).pipe(
       tap(_ => this.log('deleted hero id=' + id)),
